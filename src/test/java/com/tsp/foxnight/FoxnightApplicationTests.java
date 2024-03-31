@@ -1,0 +1,13 @@
+package com.tsp.foxnight;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class FoxnightApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
