@@ -33,10 +33,8 @@ public class AuthController {
                 .authenticated(body.getLogin(), body.getPassword(), Collections.emptyList());
         Authentication authenticate = authenticationProvider.authenticate(token);
 
-//        token.setDetails(Objects.requireNonNull(user));
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authenticate);
-//        return Api.positiveResponse(authenticate.getDetails());
 
 
         HttpSession session = request.getSession(true);
