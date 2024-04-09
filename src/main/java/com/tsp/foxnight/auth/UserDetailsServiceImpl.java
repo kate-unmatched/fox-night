@@ -25,8 +25,7 @@ import static com.tsp.foxnight.utils.TextConstant.*;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl extends AbstractUserDetailsAuthenticationProvider implements UserDetailsService {
     private final UserRepository userRepository;
-    @Setter
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override

@@ -38,8 +38,6 @@ public class User extends AbstractEntity<Long>{
     private String passwordHash;
 
     private Boolean isActive;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    private List<Role> roles;
+    @NotNull
+    private Long roleId;
 }

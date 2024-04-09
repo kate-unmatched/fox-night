@@ -1,30 +1,48 @@
 package com.tsp.foxnight.controllers;
 
-import com.tsp.foxnight.AuthDTO;
 import com.tsp.foxnight.api.Api;
 import com.tsp.foxnight.api.PositiveResponse;
-import com.tsp.foxnight.auth.UserDetailsServiceImpl;
-import com.tsp.foxnight.entity.User;
-import com.tsp.foxnight.services.UserService;
+import com.tsp.foxnight.dto.AuthDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@AllArgsConstructor
+import java.util.Collections;
+
+import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+
+@RestController
+@RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
+    private final AuthenticationProvider authenticationProvider;
 
     @PostMapping("auth")
-    public PositiveResponse<User> auth(@RequestBody @Valid AuthDTO body, HttpServletRequest request, HttpServletResponse response) {
-        return Api.positiveResponse(userService.auth(body, request, response));}
+    public PositiveResponse<?> auth(@RequestBody @Valid AuthDTO body, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken
+                .authenticated(body.getLogin(), body.getPassword(), Collections.emptyList());
+        Authentication authenticate = authenticationProvider.authenticate(token);
+
+//        token.setDetails(Objects.requireNonNull(user));
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authenticate);
+//        return Api.positiveResponse(authenticate.getDetails());
+
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute(SPRING_SECURITY_CONTEXT_KEY, context);
+
+        return Api.positiveResponse("Вы авторизованы");
+    }
+
 }

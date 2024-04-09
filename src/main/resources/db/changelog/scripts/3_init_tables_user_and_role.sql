@@ -1,15 +1,17 @@
-CREATE SEQUENCE global_sequence;
+CREATE SEQUENCE IF NOT EXISTS global_sequence;
 
 CREATE TABLE IF NOT EXISTS users_
 (
     id BIGSERIAL PRIMARY KEY,
+    creation_date timestamp,
+    modification_date timestamp,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
-    phoneNumber VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
     login VARCHAR(255) NOT NULL UNIQUE,
-    passwordHash VARCHAR(255),
-    isActive BOOLEAN
-);
+    password VARCHAR(255),
+    is_active BOOLEAN
+    );
 
 CREATE TABLE IF NOT EXISTS role
 (
