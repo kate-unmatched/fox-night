@@ -1,5 +1,6 @@
 package com.tsp.foxnight.services;
 
+import com.google.common.base.Preconditions;
 import com.tsp.foxnight.dto.UserOfficerDTO;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.UserRepository;
@@ -8,14 +9,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     @Transactional
     public User createUser(UserOfficerDTO user) {
-        if (userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isPresent())
-            Errors.E289.thr(user.getLogin());
+        Preconditions.checkState(userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isEmpty(),
+                "Пользователь с таким логином уже есть в системе");
+        long leftLimit = 1L;
+        long rightLimit = 10L;
+        long generatedLong = leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
 
         User newUser = new User()
                 .setName(user.getName())
@@ -26,7 +34,12 @@ public class UserService {
                 .setBirthday(user.getBirthday())
                 .setStartWork(user.getStartWork())
                 .setCity(user.getCity())
-                .setPhoneNumber(user.getPhoneNumber());
+                .setPhoneNumber(user.getPhoneNumber())
+                .setId(new Random().nextLong())
+                .setCreationDate(LocalDateTime.now())
+                .setModificationDate(LocalDateTime.now())
+                .setRoleId(generatedLong)
+                .setPasswordHash("$2a$10$L3kmz08v.qbZssn3Z5abP.N7skjRogz/HSA2qCp0TKY/UDx32jTxi");
 
         return userRepository.save(newUser);
     }

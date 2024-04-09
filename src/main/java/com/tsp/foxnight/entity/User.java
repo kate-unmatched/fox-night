@@ -6,15 +6,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,9 +22,18 @@ import java.util.List;
 @FieldNameConstants
 @Table(name = "users_")
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class User extends AbstractEntity<Long>{
+public class User{
+    @Id
+    private Long id;
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationDate;
+
+    @LastModifiedDate
+    private LocalDateTime modificationDate;
+
     @NotBlank
     private String name;
     private LocalDate birthday;
@@ -46,5 +55,12 @@ public class User extends AbstractEntity<Long>{
     @NotNull
     private Long roleId;
 
-    private byte[] ava;
+    @PreUpdate
+    public void preUpdate(){
+        modificationDate = LocalDateTime.now();
+    }
+    @PrePersist
+    public void prePersist(){
+        creationDate = LocalDateTime.now();
+    }
 }

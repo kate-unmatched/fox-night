@@ -1,8 +1,6 @@
 package com.tsp.foxnight.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -20,13 +18,19 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractEntity<V> extends IdentityEntity<V> {
     @CreatedDate
-    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false, updatable = false)
     private LocalDateTime creationDate;
 
     @LastModifiedDate
-    @Setter(AccessLevel.PRIVATE)
     private LocalDateTime modificationDate;
+    @PreUpdate
+    public void preUpdate(){
+        modificationDate = LocalDateTime.now();
+    }
+    @PrePersist
+    public void prePersist(){
+        creationDate = LocalDateTime.now();
+    }
 
     public boolean equals(final Object o) {
         if (o == this) return true;
