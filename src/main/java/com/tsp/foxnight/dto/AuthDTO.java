@@ -1,4 +1,4 @@
-package com.tsp.foxnight;
+package com.tsp.foxnight.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

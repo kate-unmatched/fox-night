@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Hello API", description = "Rav")
 public class HelloController {
 
-    @GetMapping("")
+    @GetMapping()
     public PositiveResponse<String> sayHello(){
         return Api.positiveResponse("Hello, dear Kate!");
     }

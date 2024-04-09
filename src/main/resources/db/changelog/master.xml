@@ -10,4 +10,7 @@
     <changeSet id="2-02" author="emarchenko">
         <sqlFile path="db/changelog/scripts/2_init_tables_spring.sql"/>
     </changeSet>
+    <changeSet id="3-03" author="emarchenko">
+        <sqlFile path="db/changelog/scripts/3_init_tables_user_and_role.sql"/>
+    </changeSet>
 </databaseChangeLog>

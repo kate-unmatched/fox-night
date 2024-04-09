@@ -1,0 +1,18 @@
+CREATE SEQUENCE global_sequence;
+
+CREATE TABLE IF NOT EXISTS users_
+(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phoneNumber VARCHAR(255) NOT NULL,
+    login VARCHAR(255) NOT NULL UNIQUE,
+    passwordHash VARCHAR(255),
+    isActive BOOLEAN
+);
+
+CREATE TABLE IF NOT EXISTS role
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
