@@ -3,11 +3,11 @@ package com.tsp.foxnight.controllers;
 import com.tsp.foxnight.api.Api;
 import com.tsp.foxnight.api.PositiveResponse;
 import com.tsp.foxnight.dto.AuthDTO;
+import com.tsp.foxnight.dto.UserOfficerDTO;
+import com.tsp.foxnight.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +26,7 @@ import static org.springframework.security.web.context.HttpSessionSecurityContex
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthenticationProvider authenticationProvider;
+    private final UserService userService;
 
     @PostMapping("auth")
     public PositiveResponse<?> auth(@RequestBody @Valid AuthDTO body, HttpServletRequest request) {
@@ -42,5 +43,12 @@ public class AuthController {
 
         return Api.positiveResponse("Вы авторизованы");
     }
+
+    @PostMapping("register-officer")
+    public PositiveResponse<?> register(@RequestBody @Valid UserOfficerDTO body, HttpServletRequest request){
+        return Api.positiveResponse(userService.createUser(body));
+    }
+
+
 
 }

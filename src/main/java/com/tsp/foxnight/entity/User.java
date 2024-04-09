@@ -10,24 +10,29 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @Entity
 @FieldNameConstants
 @Table(name = "users_")
-@ToString(exclude = "roles")
 @RequiredArgsConstructor
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 public class User extends AbstractEntity<Long>{
     @NotBlank
     private String name;
-
+    private LocalDate birthday;
+    private LocalDate startWork;
+    private String telegram;
+    private String city;
     @Email
     private String email;
-    @NotBlank
     private String phoneNumber;
 
     @NotBlank
@@ -40,4 +45,6 @@ public class User extends AbstractEntity<Long>{
     private Boolean isActive;
     @NotNull
     private Long roleId;
+
+    private byte[] ava;
 }
