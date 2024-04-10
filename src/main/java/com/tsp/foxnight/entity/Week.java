@@ -8,11 +8,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-public class Link extends IdentityEntity<Long>{
-    @NotBlank
-    private String name;
-
-    @NotBlank
-    private String url;
-
+public class Week extends IdentityEntity<Long>{
 }
