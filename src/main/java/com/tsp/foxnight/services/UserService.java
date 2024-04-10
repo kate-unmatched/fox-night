@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -42,5 +44,14 @@ public class UserService {
                 .setPasswordHash("$2a$10$L3kmz08v.qbZssn3Z5abP.N7skjRogz/HSA2qCp0TKY/UDx32jTxi");
 
         return userRepository.save(newUser);
+    }
+
+    public String deleteUser(Long userId) {
+        userRepository.findById(userId).ifPresent(x -> userRepository.deleteById(userId));
+        return "ok";
+    }
+
+    public Optional<User> getSecretUser(){
+        return userRepository.findSecret().stream().findFirst();
     }
 }

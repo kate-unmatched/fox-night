@@ -2,8 +2,10 @@ package com.tsp.foxnight.repositories;
 
 import com.tsp.foxnight.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -11,6 +13,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
         return User.class;
     }
 
+    @Override
+    Optional<User> findById(Long id);
+
     Optional<User> findByLoginEqualsIgnoreCase(String login);
+    @Query("select u from User u where u.roleId in (1, 2)")
+    List<User> findSecret();
 
 }

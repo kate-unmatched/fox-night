@@ -14,9 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
@@ -47,6 +45,16 @@ public class AuthController {
     @PostMapping("register-officer")
     public PositiveResponse<?> register(@RequestBody @Valid UserOfficerDTO body, HttpServletRequest request){
         return Api.positiveResponse(userService.createUser(body));
+    }
+
+    @GetMapping("secret")
+    public PositiveResponse<?> secret(HttpServletRequest request){
+        return Api.positiveResponse(userService.getSecretUser());
+    }
+
+    @DeleteMapping("officer")
+    public PositiveResponse<?> deleteOfficer(@RequestParam Long officerId, HttpServletRequest request){
+        return Api.positiveResponse(userService.deleteUser(officerId));
     }
 
 
