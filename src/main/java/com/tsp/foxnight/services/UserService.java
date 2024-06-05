@@ -1,19 +1,15 @@
 package com.tsp.foxnight.services;
 
 import com.google.common.base.Preconditions;
+import com.tsp.foxnight.dto.PostDTO;
 import com.tsp.foxnight.dto.UserOfficerDTO;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.UserRepository;
 import com.tsp.foxnight.utils.Errors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -37,21 +33,9 @@ public class UserService {
                 .setStartWork(user.getStartWork())
                 .setCity(user.getCity())
                 .setPhoneNumber(user.getPhoneNumber())
-                .setId(new Random().nextLong())
-                .setCreationDate(LocalDateTime.now())
-                .setModificationDate(LocalDateTime.now())
-                .setRoleId(generatedLong)
                 .setPasswordHash("$2a$10$L3kmz08v.qbZssn3Z5abP.N7skjRogz/HSA2qCp0TKY/UDx32jTxi");
 
         return userRepository.save(newUser);
     }
 
-    public String deleteUser(Long userId) {
-        userRepository.findById(userId).ifPresent(x -> userRepository.deleteById(userId));
-        return "ok";
-    }
-
-    public Optional<User> getSecretUser(){
-        return userRepository.findSecret().stream().findFirst();
-    }
 }

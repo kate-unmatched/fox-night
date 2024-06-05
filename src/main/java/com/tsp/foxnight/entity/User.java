@@ -24,15 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class User{
-    @Id
-    private Long id;
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime creationDate;
-
-    @LastModifiedDate
-    private LocalDateTime modificationDate;
+public class User extends AbstractEntity<Long>{
 
     @NotBlank
     private String name;
@@ -55,12 +47,4 @@ public class User{
     @NotNull
     private Long roleId;
 
-    @PreUpdate
-    public void preUpdate(){
-        modificationDate = LocalDateTime.now();
-    }
-    @PrePersist
-    public void prePersist(){
-        creationDate = LocalDateTime.now();
-    }
 }

@@ -12,5 +12,8 @@ import lombok.experimental.FieldNameConstants;
 public abstract class IdentityEntity<V>{
 
     @Id
+    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private V id;
 }
