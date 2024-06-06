@@ -21,6 +21,11 @@ public class AuthController {
         return Api.positiveResponse(authService.login(body, request));
     }
 
+    @GetMapping("refresh-token")
+    public PositiveResponse<?> refreshToken(HttpServletRequest request) {
+        return Api.positiveResponse(authService.refreshToken(request));
+    }
+
 
 
 

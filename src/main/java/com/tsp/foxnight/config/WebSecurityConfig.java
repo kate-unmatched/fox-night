@@ -1,6 +1,5 @@
 package com.tsp.foxnight.config;
 
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,17 +7,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -27,8 +27,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // ...
         http.cors().and().csrf().disable();
+
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             response.setCharacterEncoding(UTF_8);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -41,19 +41,21 @@ public class WebSecurityConfig {
                     }
                     """);
         });
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/users/auth", "/swagger-ui/*",
-                                "/api-docs", "/api-docs/custom", "/api-docs/swagger-config", "/version").permitAll()
-                        .anyRequest().authenticated()
-                );//.formLogin(Customizer.withDefaults());
-//                .formLogin(Customizer.withDefaults());
+
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/auth/login", "/swagger-ui/**", "/api-docs/**", "/version").permitAll()
+                .anyRequest().authenticated()
+        );
 
         return http.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer ignoringCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/auth", "/version");
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
