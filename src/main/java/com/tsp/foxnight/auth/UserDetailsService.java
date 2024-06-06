@@ -4,13 +4,11 @@ import com.google.common.base.Preconditions;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ import static com.tsp.foxnight.utils.TextConstant.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl extends AbstractUserDetailsAuthenticationProvider implements UserDetailsService {
+public class UserDetailsService extends AbstractUserDetailsAuthenticationProvider implements org.springframework.security.core.userdetails.UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -46,7 +44,7 @@ public class UserDetailsServiceImpl extends AbstractUserDetailsAuthenticationPro
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User user = getActiveUser(login);
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPasswordHash(), Collections.emptyList());
+        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), Collections.emptyList());
     }
 
     public User getActiveUser(String login) {

@@ -21,9 +21,8 @@ import java.util.List;
 @Entity
 @FieldNameConstants
 @Table(name = "users_")
-@RequiredArgsConstructor
-@AllArgsConstructor
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public class User extends AbstractEntity<Long>{
 
     @NotBlank
@@ -31,17 +30,18 @@ public class User extends AbstractEntity<Long>{
     private LocalDate birthday;
     private LocalDate startWork;
     private String telegram;
+    @NotBlank
     private String city;
     @Email
     private String email;
+    @NotBlank
     private String phoneNumber;
 
     @NotBlank
     @Column(updatable = false)
     private String login;
     @JsonIgnore
-    @Column(name = "password")
-    private String passwordHash;
+    private String password;
 
     private Boolean isActive;
     @NotNull

@@ -1,13 +1,13 @@
 package com.tsp.foxnight.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-public class UserOfficerDTO {
+public class UserDTO {
     @NotBlank
     private String name;
     private LocalDate birthday;
@@ -16,6 +16,7 @@ public class UserOfficerDTO {
     @NotBlank
     private String city;
     @Email
+    @NotBlank
     private String email;
     @NotBlank
     private String phoneNumber;
@@ -23,5 +24,8 @@ public class UserOfficerDTO {
     private String login;
 
     private Boolean isActive;
+
+    @NotNull
+    private Long roleId;
 
 }
