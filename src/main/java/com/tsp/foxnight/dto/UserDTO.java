@@ -1,5 +1,6 @@
 package com.tsp.foxnight.dto;
 
+import com.tsp.foxnight.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,9 +24,9 @@ public class UserDTO {
     @NotBlank
     private String login;
 
-    private Boolean isActive;
-
     @NotNull
-    private Long roleId;
+    private UserRole role;
+
+    private String photo;
 
 }

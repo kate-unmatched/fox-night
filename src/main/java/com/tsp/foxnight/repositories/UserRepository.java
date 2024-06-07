@@ -18,7 +18,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByLogin (String login);
 
     Optional<User> findByLoginEqualsIgnoreCase(String login);
-    @Query("select u from User u where u.roleId in (1, 2)")
-    List<User> findSecret();
-
 }

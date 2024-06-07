@@ -15,5 +15,6 @@ CREATE TABLE if not exists users_
     login             VARCHAR(255)          NOT NULL,
     password          VARCHAR(255)          NOT NULL,
     is_active         BOOLEAN                        default false,
-    role_id           INTEGER                NOT NULL
+    role              VARCHAR(10)             NOT NULL,
+    photo             text
 );

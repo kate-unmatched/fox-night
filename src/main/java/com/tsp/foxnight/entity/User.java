@@ -1,21 +1,16 @@
 package com.tsp.foxnight.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Entity
@@ -23,7 +18,7 @@ import java.util.List;
 @Table(name = "users_")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class User extends AbstractEntity<Long>{
+public class User extends AbstractEntity<Long> {
 
     @NotBlank
     private String name;
@@ -44,7 +39,11 @@ public class User extends AbstractEntity<Long>{
     private String password;
 
     private Boolean isActive;
-    @NotNull
-    private Long roleId;
 
+    @NotNull
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private UserRole role;
+
+    private String photo;
 }

@@ -57,4 +57,8 @@ public class UserDetailsService extends AbstractUserDetailsAuthenticationProvide
         return userRepository.findByLoginEqualsIgnoreCase(login)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_DEFINED));
     }
+
+    public String getEncryptedPassword(String password){
+        return passwordEncoder.encode(password);
+    }
 }
