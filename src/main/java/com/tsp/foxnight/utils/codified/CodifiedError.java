@@ -82,10 +82,6 @@ public class CodifiedError extends RuntimeException {
         throw get613(args);
     }
 
-    public static void throw617(Object... args) {
-        throw get617(args);
-    }
-
     public static void throw618(Object... args) {
         throw get618(args);
     }
@@ -109,10 +105,6 @@ public class CodifiedError extends RuntimeException {
     public static CodifiedError get614() { return new CodifiedError(E614); }
 
     public static CodifiedError get615() { return new CodifiedError(E615); }
-
-    public static CodifiedError get617(Object... args) {
-        return new CodifiedError(E617, args);
-    }
 
     public static CodifiedError get618(Object... args) {
         return new CodifiedError(E618, args);

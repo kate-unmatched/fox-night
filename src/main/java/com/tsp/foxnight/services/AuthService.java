@@ -1,6 +1,8 @@
 package com.tsp.foxnight.services;
 
 import com.tsp.foxnight.dto.AuthDTO;
+import com.tsp.foxnight.entity.UserRole;
+import com.tsp.foxnight.repositories.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +20,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.swing.UIManager.put;
 import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationProvider authenticationProvider;
+    private final UserRepository userRepository;
     private final String secretKey = "vQ6E4w9X2fQ+s4vj1ldYfEdxUUb4e8RoYjKovXBfZmE=";
 
     public Map<String, String> login(AuthDTO body, HttpServletRequest request) {
@@ -73,11 +75,14 @@ public class AuthService {
 
         String accessToken = generateToken(authenticate.getName(), 172800000L); // 2 days
         String refreshToken = generateToken(authenticate.getName(), 86400000L); // 1 day
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserRole role = userRepository.findByLogin(login).getRole();
 
         Map<String, String> tokens = new HashMap<>(){
             {
                 put("accessToken", accessToken);
                 put("refreshToken", refreshToken);
+                put("role", role.name().toLowerCase());
             }
         };
         return tokens;
@@ -90,23 +95,5 @@ public class AuthService {
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-    }
-
-    public static class AuthResponse {
-        private final String accessToken;
-        private final String refreshToken;
-
-        public AuthResponse(String accessToken, String refreshToken) {
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public String getRefreshToken() {
-            return refreshToken;
-        }
     }
 }
