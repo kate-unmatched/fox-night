@@ -1,30 +1,29 @@
 package com.tsp.foxnight.services;
 
 import com.tsp.foxnight.auth.UserDetailsService;
+import com.tsp.foxnight.dto.UserBriefDTO;
 import com.tsp.foxnight.dto.UserDTO;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.UserRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-import static com.tsp.foxnight.utils.Errors.E289;
+import static com.tsp.foxnight.utils.Errors.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
+
+    public User getUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
+        E314.thr(user.getIsActive(), user.getLogin());
+        return user;
+    }
     public User createUser(UserDTO user) {
         E289.thr(userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isEmpty(), user.getLogin());
 
@@ -47,7 +46,7 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public User updateUser(Long userId, UserDTO userDTO) {
+    public User updateUser(Long userId, UserBriefDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
@@ -63,6 +62,13 @@ public class UserService {
         if (userDTO.getPhoto() != null) user.setPhoto(userDTO.getPhoto());
 
         return userRepository.save(user);
+    }
+
+    public Boolean deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
+        user.setIsActive(false);
+        userRepository.save(user);
+        return true;
     }
 
     public static String generateRandomString() {
