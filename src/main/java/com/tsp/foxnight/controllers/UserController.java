@@ -9,10 +9,7 @@ import com.tsp.foxnight.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("user")
@@ -24,6 +21,12 @@ public class UserController {
     public PositiveResponse<?> createNewUser(@RequestBody @Valid UserDTO body, HttpServletRequest request) {
         return Api.positiveResponse(userService.createUser(body));
     }
+
+    @PatchMapping("{id}")
+    public PositiveResponse<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO body) {
+        return Api.positiveResponse(userService.updateUser(id, body));
+    }
+
 
 
 
