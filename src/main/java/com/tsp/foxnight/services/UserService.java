@@ -3,6 +3,8 @@ package com.tsp.foxnight.services;
 import com.tsp.foxnight.auth.UserDetailsService;
 import com.tsp.foxnight.dto.UserBriefDTO;
 import com.tsp.foxnight.dto.UserDTO;
+import com.tsp.foxnight.entity.RestAudit;
+import com.tsp.foxnight.entity.RestType;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

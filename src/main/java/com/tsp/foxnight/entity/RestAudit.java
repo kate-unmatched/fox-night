@@ -32,7 +32,7 @@ public class RestAudit extends IdentityEntity<Long> {
     @NotNull
     @Column
     @Enumerated(value = EnumType.STRING)
-    private UserRole requestType;
+    private RestType requestType;
 
     @Convert(converter = JsonNodeConverter.class)
     @Column(columnDefinition = "jsonb")

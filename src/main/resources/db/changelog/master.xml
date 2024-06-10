@@ -16,4 +16,7 @@
     <changeSet id="4-04" author="emarchenko">
         <sqlFile path="db/changelog/scripts/4_create_table_user_role.sql"/>
     </changeSet>
+    <changeSet id="5-05" author="emarchenko">
+        <sqlFile path="db/changelog/scripts/5_create_table_rest_audit.sql"/>
+    </changeSet>
 </databaseChangeLog>
