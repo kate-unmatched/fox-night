@@ -17,7 +17,6 @@ public class AuthController {
 
     @PostMapping("login")
     public PositiveResponse<?> auth(@RequestBody @Valid AuthDTO body, HttpServletRequest request) {
-//        String login = SecurityContextHolder.getContext().getAuthentication().getName();
         return Api.positiveResponse(authService.login(body, request));
     }
 

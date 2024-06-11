@@ -2,12 +2,14 @@ package com.tsp.foxnight.auth;
 
 import com.google.common.base.Preconditions;
 import com.tsp.foxnight.entity.User;
+import com.tsp.foxnight.entity.UserRole;
 import com.tsp.foxnight.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +53,11 @@ public class UserDetailsService extends AbstractUserDetailsAuthenticationProvide
         User user = findByLogin(login);
         Preconditions.checkState(BooleanUtils.toBoolean(user.getIsActive()), ACCOUNT_IS_NOT_ACTIVE);
         return user;
+    }
+
+    public UserRole getRole() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByLogin(login).getRole();
     }
 
     public User findByLogin(String login) {

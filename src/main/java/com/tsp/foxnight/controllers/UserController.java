@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -21,13 +21,17 @@ public class UserController {
     public PositiveResponse<?> getUser(@PathVariable Long id) {
         return Api.positiveResponse(userService.getUser(id));
     }
+    @GetMapping()
+    public PositiveResponse<?> getAllUsers() {
+        return Api.positiveResponse(userService.getAllUsers());
+    }
     @PostMapping()
     public PositiveResponse<?> createNewUser(@RequestBody @Valid UserDTO body, HttpServletRequest request) {
         return Api.positiveResponse(userService.createUser(body));
     }
 
-    @PatchMapping("{id}")
-    public PositiveResponse<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserBriefDTO body) {
+    @PutMapping("{id}")
+    public PositiveResponse<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO body) {
         return Api.positiveResponse(userService.updateUser(id, body));
     }
 

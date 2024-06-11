@@ -1,17 +1,23 @@
 package com.tsp.foxnight.services;
 
+import com.google.common.base.Objects;
 import com.tsp.foxnight.auth.UserDetailsService;
+import com.tsp.foxnight.dto.UserAllDTO;
 import com.tsp.foxnight.dto.UserBriefDTO;
 import com.tsp.foxnight.dto.UserDTO;
-import com.tsp.foxnight.entity.RestAudit;
-import com.tsp.foxnight.entity.RestType;
 import com.tsp.foxnight.entity.User;
+import com.tsp.foxnight.entity.UserRole;
 import com.tsp.foxnight.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.tsp.foxnight.utils.Errors.*;
 
@@ -26,8 +32,25 @@ public class UserService {
         E314.thr(user.getIsActive(), user.getLogin());
         return user;
     }
+
+    public List<UserAllDTO> getAllUsers() {
+        List<UserAllDTO> userShort = new ArrayList<>();
+        List<User> users = userRepository.findAll()
+                .stream()
+                .filter(x -> x.getIsActive() == Boolean.TRUE)
+                .filter(x -> x.getRole() != UserRole.ADMIN)
+                .sorted(Comparator.comparing(User::getName))
+                .toList();
+        users.stream().forEach(x -> userShort.add(new UserAllDTO()
+                .setId(x.getId())
+                .setName(x.getName())
+                .setPhoto(x.getPhoto()))
+        );
+        return userShort;
+    }
     public User createUser(UserDTO user) {
         E289.thr(userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isEmpty(), user.getLogin());
+        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
 
         String cleanPassword = generateRandomString();
 
@@ -48,7 +71,9 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public User updateUser(Long userId, UserBriefDTO userDTO) {
+    public User updateUser(Long userId, UserDTO userDTO) {
+        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
@@ -65,8 +90,8 @@ public class UserService {
 
         return userRepository.save(user);
     }
-
     public Boolean deleteUser(Long userId) {
+        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
         user.setIsActive(false);
         userRepository.save(user);
