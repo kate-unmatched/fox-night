@@ -25,6 +25,9 @@ public class RestAudit extends IdentityEntity<Long> {
     private LocalDateTime requestTime;
 
     @NotNull
+    private String name;
+
+    @NotNull
     @Column
     @Enumerated(value = EnumType.STRING)
     private UserRole role;

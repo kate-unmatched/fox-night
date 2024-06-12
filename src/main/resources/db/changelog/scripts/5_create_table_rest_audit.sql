@@ -3,6 +3,7 @@ CREATE SEQUENCE if not exists rest_audit_sequence;
 CREATE TABLE if not exists rest_audit
 (
     id           BIGSERIAL PRIMARY KEY not null,
+    name         varchar(255)          not null,
     request_time timestamp             not null default now(),
     role         VARCHAR(10)           NOT NULL,
     request_type VARCHAR(10)           NOT NULL,
