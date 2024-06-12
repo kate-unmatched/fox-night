@@ -21,6 +21,10 @@ public class UserController {
     public PositiveResponse<?> getUser(@PathVariable Long id) {
         return Api.positiveResponse(userService.getUser(id));
     }
+    @GetMapping("birthdays")
+    public PositiveResponse<?> getUpcomingBirthdays() {
+        return Api.positiveResponse(userService.getBirthdays());
+    }
     @GetMapping()
     public PositiveResponse<?> getAllUsers() {
         return Api.positiveResponse(userService.getAllUsers());
@@ -30,7 +34,7 @@ public class UserController {
         return Api.positiveResponse(userService.createUser(body));
     }
 
-    @PutMapping("{id}")
+    @PatchMapping("{id}")
     public PositiveResponse<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO body) {
         return Api.positiveResponse(userService.updateUser(id, body));
     }
@@ -39,9 +43,4 @@ public class UserController {
     public PositiveResponse<?> deleteUser(@PathVariable Long id) {
         return Api.positiveResponse(userService.deleteUser(id));
     }
-
-
-
-
-
 }

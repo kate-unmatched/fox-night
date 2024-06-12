@@ -65,6 +65,13 @@ public class UserDetailsService extends AbstractUserDetailsAuthenticationProvide
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_DEFINED));
     }
 
+    public Long getIdNow() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByLoginEqualsIgnoreCase(login)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_DEFINED));
+        return user.getId();
+    }
+
     public String getEncryptedPassword(String password){
         return passwordEncoder.encode(password);
     }

@@ -2,6 +2,7 @@ package com.tsp.foxnight.services;
 
 import com.google.common.base.Objects;
 import com.tsp.foxnight.auth.UserDetailsService;
+import com.tsp.foxnight.dto.BirthdayDTO;
 import com.tsp.foxnight.dto.UserAllDTO;
 import com.tsp.foxnight.dto.UserBriefDTO;
 import com.tsp.foxnight.dto.UserDTO;
@@ -31,6 +32,17 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
         E314.thr(user.getIsActive(), user.getLogin());
         return user;
+    }
+    public List<BirthdayDTO> getBirthdays(){
+        List<User> users = userRepository.getBirthdayUsers();
+        List<BirthdayDTO> birthdays = new ArrayList<>();
+        users.forEach(x -> birthdays.add(new BirthdayDTO()
+                .setId(x.getId())
+                .setName(x.getName())
+                .setBirthday(x.getBirthday())
+                .setPhoto(x.getPhoto()))
+        );
+        return birthdays;
     }
 
     public List<UserAllDTO> getAllUsers() {
@@ -72,10 +84,10 @@ public class UserService {
     }
 
     public User updateUser(Long userId, UserDTO userDTO) {
-        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        if (userDetailsService.getRole().equals(UserRole.EMPLOYEE) ) {
+            E456.thr(java.util.Objects.equals(userId, userDetailsService.getIdNow()));
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
 
         if (userDTO.getName() != null) user.setName(userDTO.getName());
         if (userDTO.getBirthday() != null) user.setBirthday(userDTO.getBirthday());
