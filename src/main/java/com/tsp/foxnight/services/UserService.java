@@ -4,35 +4,39 @@ import com.google.common.base.Objects;
 import com.tsp.foxnight.auth.UserDetailsService;
 import com.tsp.foxnight.dto.BirthdayDTO;
 import com.tsp.foxnight.dto.UserAllDTO;
-import com.tsp.foxnight.dto.UserBriefDTO;
 import com.tsp.foxnight.dto.UserDTO;
+import com.tsp.foxnight.entity.RestType;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.entity.UserRole;
 import com.tsp.foxnight.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.tsp.foxnight.utils.Errors.*;
 
 @Service
+
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
+    private final RestAuditService restAuditService;
 
+    @SneakyThrows
     public User getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
         E314.thr(user.getIsActive(), user.getLogin());
+        restAuditService.saveAuditRequest(RestType.GET, Collections.singletonMap("userId", userId));
         return user;
     }
+    @SneakyThrows
     public List<BirthdayDTO> getBirthdays(){
         List<User> users = userRepository.getBirthdayUsers();
         List<BirthdayDTO> birthdays = new ArrayList<>();
@@ -42,9 +46,10 @@ public class UserService {
                 .setBirthday(x.getBirthday())
                 .setPhoto(x.getPhoto()))
         );
+        restAuditService.saveAuditRequest(RestType.GET, Collections.singletonMap("birthday", "all"));
         return birthdays;
     }
-
+    @SneakyThrows
     public List<UserAllDTO> getAllUsers() {
         List<UserAllDTO> userShort = new ArrayList<>();
         List<User> users = userRepository.findAll()
@@ -53,16 +58,17 @@ public class UserService {
                 .filter(x -> x.getRole() != UserRole.ADMIN)
                 .sorted(Comparator.comparing(User::getName))
                 .toList();
-        users.stream().forEach(x -> userShort.add(new UserAllDTO()
+        users.forEach(x -> userShort.add(new UserAllDTO()
                 .setId(x.getId())
                 .setName(x.getName())
                 .setPhoto(x.getPhoto()))
         );
+        restAuditService.saveAuditRequest(RestType.GET, Collections.singletonMap("users", "all"));
         return userShort;
     }
     public User createUser(UserDTO user) {
         E289.thr(userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isEmpty(), user.getLogin());
-        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
+        E167.thr(!Objects.equal(userDetailsService.getRoleNow(), UserRole.EMPLOYEE));
 
         String cleanPassword = generateRandomString();
 
@@ -79,15 +85,27 @@ public class UserService {
                 .setIsActive(true)
                 .setRole(user.getRole())
                 .setPassword(userDetailsService.getEncryptedPassword(cleanPassword));
+        user.setPassword(cleanPassword);
+
+        restAuditService.saveAuditRequest(RestType.POST, user);
 
         return userRepository.save(newUser);
     }
 
     public User updateUser(Long userId, UserDTO userDTO) {
-        if (userDetailsService.getRole().equals(UserRole.EMPLOYEE) ) {
-            E456.thr(java.util.Objects.equals(userId, userDetailsService.getIdNow()));
-        }
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
+
+        if (userDetailsService.getRoleNow().equals(UserRole.EMPLOYEE) ) {
+            E456.thr(java.util.Objects.equals(userId, userDetailsService.getIdNow()));
+            if (userDTO.getBirthday() != null) user.setBirthday(userDTO.getBirthday());
+            if (userDTO.getTelegram() != null) user.setTelegram(userDTO.getTelegram());
+            if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
+            if (userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
+            if (userDTO.getPhoto() != null) user.setPhoto(userDTO.getPhoto());
+            restAuditService.saveAuditRequest(RestType.PATCH, user);
+
+            return userRepository.save(user);
+        }
 
         if (userDTO.getName() != null) user.setName(userDTO.getName());
         if (userDTO.getBirthday() != null) user.setBirthday(userDTO.getBirthday());
@@ -100,13 +118,17 @@ public class UserService {
         if (userDTO.getRole() != null) user.setRole(userDTO.getRole());
         if (userDTO.getPhoto() != null) user.setPhoto(userDTO.getPhoto());
 
+        restAuditService.saveAuditRequest(RestType.PATCH, user);
+
         return userRepository.save(user);
     }
+    @SneakyThrows
     public Boolean deleteUser(Long userId) {
-        E167.thr(!Objects.equal(userDetailsService.getRole(), UserRole.EMPLOYEE));
+        E167.thr(!Objects.equal(userDetailsService.getRoleNow(), UserRole.EMPLOYEE));
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
         user.setIsActive(false);
         userRepository.save(user);
+        restAuditService.saveAuditRequest(RestType.DELETE, Collections.singletonMap("userId", userId));
         return true;
     }
 
@@ -121,4 +143,5 @@ public class UserService {
         }
         return sb.toString();
     }
+
 }

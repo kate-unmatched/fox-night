@@ -1,4 +1,4 @@
-CREATE SEQUENCE if not exists rest_audit_sequence;
+ALTER SEQUENCE rest_audit_SEQ INCREMENT BY 50;
 
 CREATE TABLE if not exists rest_audit
 (
@@ -7,7 +7,7 @@ CREATE TABLE if not exists rest_audit
     request_time timestamp             not null default now(),
     role         VARCHAR(10)           NOT NULL,
     request_type VARCHAR(10)           NOT NULL,
-    body         jsonb
+    body         text
 );
 
 CREATE TABLE if not exists rest_type

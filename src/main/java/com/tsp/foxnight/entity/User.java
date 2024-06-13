@@ -14,7 +14,6 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@FieldNameConstants
 @Table(name = "users_")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)

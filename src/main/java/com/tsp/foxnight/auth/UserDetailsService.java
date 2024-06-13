@@ -55,7 +55,7 @@ public class UserDetailsService extends AbstractUserDetailsAuthenticationProvide
         return user;
     }
 
-    public UserRole getRole() {
+    public UserRole getRoleNow() {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByLogin(login).getRole();
     }
@@ -70,6 +70,13 @@ public class UserDetailsService extends AbstractUserDetailsAuthenticationProvide
         User user = userRepository.findByLoginEqualsIgnoreCase(login)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_DEFINED));
         return user.getId();
+    }
+
+    public String getNameNow() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByLoginEqualsIgnoreCase(login)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_DEFINED));
+        return user.getName();
     }
 
     public String getEncryptedPassword(String password){

@@ -19,4 +19,7 @@
     <changeSet id="5-05" author="emarchenko">
         <sqlFile path="db/changelog/scripts/5_create_table_rest_audit.sql"/>
     </changeSet>
+    <changeSet id="6-06" author="emarchenko">
+        <sqlFile path="db/changelog/scripts/6_create_table_links.sql"/>
+    </changeSet>
 </databaseChangeLog>
