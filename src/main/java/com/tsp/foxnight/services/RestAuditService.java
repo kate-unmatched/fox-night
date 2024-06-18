@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tsp.foxnight.auth.UserDetailsService;
+import com.tsp.foxnight.dto.RestDTO;
+import com.tsp.foxnight.dto.UserAllDTO;
 import com.tsp.foxnight.entity.RestAudit;
 import com.tsp.foxnight.entity.RestType;
+import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.repositories.RestAuditRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.MalformedParameterizedTypeException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -35,7 +40,7 @@ public class RestAuditService {
         restAuditRepository.save(restAudit);
     }
     @SneakyThrows
-    public void saveAuditRequest(RestType type, Map<?,?> entity) throws JsonProcessingException {
+    public void saveAuditRequest(RestType type, Map<?,?> entity) {
 
         JsonNode entityJson = objectMapper.valueToTree(entity);
         String body = objectMapper.writeValueAsString(entityJson);
@@ -46,4 +51,19 @@ public class RestAuditService {
                 .setBody(body);
         restAuditRepository.save(restAudit);
     }
+
+    public List<RestDTO> getAllRequests(){
+        List<RestDTO> requestsShort = new ArrayList<>();
+        List<RestAudit> requests = restAuditRepository.findAll();
+        requests.forEach(x -> requestsShort.add(new RestDTO()
+                .setId(x.getId())
+                .setName(x.getName())
+                .setRequestTime(x.getRequestTime())
+                .setRole(x.getRole().name())
+                .setRequestType(x.getRequestType().name())
+                .setBody(x.getBody())));
+        return requestsShort;
+    }
+
+
 }

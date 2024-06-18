@@ -1,5 +1,6 @@
 package com.tsp.foxnight.services;
 
+import com.tsp.foxnight.auth.UserDetailsService;
 import com.tsp.foxnight.dto.AuthDTO;
 import com.tsp.foxnight.entity.UserRole;
 import com.tsp.foxnight.repositories.UserRepository;
@@ -27,6 +28,7 @@ import static org.springframework.security.web.context.HttpSessionSecurityContex
 public class AuthService {
     private final AuthenticationProvider authenticationProvider;
     private final UserRepository userRepository;
+    private final UserDetailsService userDetailsService;
     private final String secretKey = "vQ6E4w9X2fQ+s4vj1ldYfEdxUUb4e8RoYjKovXBfZmE=";
 
     public Map<String, String> login(AuthDTO body, HttpServletRequest request) {
@@ -52,7 +54,7 @@ public class AuthService {
         return tokens;
     }
 
-    public Map<String, String> refreshToken(HttpServletRequest request) {
+    public Map<String, Object> refreshToken(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             throw new IllegalStateException("No session found, please log in first.");
@@ -78,11 +80,12 @@ public class AuthService {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         UserRole role = userRepository.findByLogin(login).getRole();
 
-        Map<String, String> tokens = new HashMap<>(){
+        Map<String, Object> tokens = new HashMap<>(){
             {
                 put("accessToken", accessToken);
                 put("refreshToken", refreshToken);
                 put("role", role.name().toLowerCase());
+                put("id", userDetailsService.getIdNow());
             }
         };
         return tokens;

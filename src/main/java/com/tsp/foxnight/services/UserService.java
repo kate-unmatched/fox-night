@@ -2,9 +2,7 @@ package com.tsp.foxnight.services;
 
 import com.google.common.base.Objects;
 import com.tsp.foxnight.auth.UserDetailsService;
-import com.tsp.foxnight.dto.BirthdayDTO;
-import com.tsp.foxnight.dto.UserAllDTO;
-import com.tsp.foxnight.dto.UserDTO;
+import com.tsp.foxnight.dto.*;
 import com.tsp.foxnight.entity.RestType;
 import com.tsp.foxnight.entity.User;
 import com.tsp.foxnight.entity.UserRole;
@@ -12,7 +10,13 @@ import com.tsp.foxnight.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,11 +70,13 @@ public class UserService {
         restAuditService.saveAuditRequest(RestType.GET, Collections.singletonMap("users", "all"));
         return userShort;
     }
-    public User createUser(UserDTO user) {
+    @SneakyThrows
+    public User createUser(UserCreateDTO user, MultipartFile file) {
         E289.thr(userRepository.findByLoginEqualsIgnoreCase(user.getLogin()).isEmpty(), user.getLogin());
         E167.thr(!Objects.equal(userDetailsService.getRoleNow(), UserRole.EMPLOYEE));
 
         String cleanPassword = generateRandomString();
+        user.setPassword(cleanPassword);
 
         User newUser = new User()
                 .setName(user.getName())
@@ -81,18 +87,23 @@ public class UserService {
                 .setStartWork(user.getStartWork())
                 .setCity(user.getCity())
                 .setPhoneNumber(user.getPhoneNumber())
-                .setPhoto(user.getPhoto())
                 .setIsActive(true)
                 .setRole(user.getRole())
                 .setPassword(userDetailsService.getEncryptedPassword(cleanPassword));
-        user.setPassword(cleanPassword);
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = "photo_" + user.getLogin() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get("C:\\employee_pictures", fileName);
+            Files.write(filePath, file.getBytes());
+            newUser.setPhoto(filePath.toString());
+        }
 
         restAuditService.saveAuditRequest(RestType.POST, user);
 
         return userRepository.save(newUser);
     }
 
-    public User updateUser(Long userId, UserDTO userDTO) {
+    public User updateUser(Long userId, UserUpdateDTO userDTO) {
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
 
         if (userDetailsService.getRoleNow().equals(UserRole.EMPLOYEE) ) {
@@ -101,7 +112,6 @@ public class UserService {
             if (userDTO.getTelegram() != null) user.setTelegram(userDTO.getTelegram());
             if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
             if (userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
-            if (userDTO.getPhoto() != null) user.setPhoto(userDTO.getPhoto());
             restAuditService.saveAuditRequest(RestType.PATCH, user);
 
             return userRepository.save(user);
@@ -114,9 +124,21 @@ public class UserService {
         if (userDTO.getCity() != null) user.setCity(userDTO.getCity());
         if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
         if (userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
-        if (userDTO.getLogin() != null) user.setLogin(userDTO.getLogin());
-        if (userDTO.getRole() != null) user.setRole(userDTO.getRole());
-        if (userDTO.getPhoto() != null) user.setPhoto(userDTO.getPhoto());
+
+        restAuditService.saveAuditRequest(RestType.PATCH, user);
+
+        return userRepository.save(user);
+    }
+    @SneakyThrows
+    public User updateUser(Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = "photo_" + user.getLogin() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get("C:\\employee_pictures", fileName);
+            Files.write(filePath, file.getBytes());
+            user.setPhoto(filePath.toString());
+        }
 
         restAuditService.saveAuditRequest(RestType.PATCH, user);
 
