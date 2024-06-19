@@ -1,4 +1,4 @@
-alter SEQUENCE links_seq INCREMENT BY 50;
+CREATE SEQUENCE links_seq INCREMENT BY 50;
 
 CREATE TABLE if not exists links
 (

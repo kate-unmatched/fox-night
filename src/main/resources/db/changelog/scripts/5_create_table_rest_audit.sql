@@ -1,4 +1,4 @@
-ALTER SEQUENCE rest_audit_SEQ INCREMENT BY 50;
+CREATE SEQUENCE rest_audit_SEQ INCREMENT BY 50;
 
 CREATE TABLE if not exists rest_audit
 (
