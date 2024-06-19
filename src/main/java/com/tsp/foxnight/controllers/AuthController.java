@@ -25,6 +25,11 @@ public class AuthController {
         return Api.positiveResponse(authService.refreshToken(request));
     }
 
+    @PostMapping("logout")
+    public PositiveResponse<?> logout(HttpServletRequest request) {
+        return Api.positiveResponse(authService.logout(request));
+    }
+
 
 
 

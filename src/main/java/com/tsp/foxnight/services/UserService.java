@@ -12,8 +12,6 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,7 +110,7 @@ public class UserService {
             if (userDTO.getTelegram() != null) user.setTelegram(userDTO.getTelegram());
             if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
             if (userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
-            restAuditService.saveAuditRequest(RestType.PATCH, user);
+            restAuditService.saveAuditRequest(RestType.POST, user);
 
             return userRepository.save(user);
         }
@@ -125,14 +123,14 @@ public class UserService {
         if (userDTO.getEmail() != null) user.setEmail(userDTO.getEmail());
         if (userDTO.getPhoneNumber() != null) user.setPhoneNumber(userDTO.getPhoneNumber());
 
-        restAuditService.saveAuditRequest(RestType.PATCH, user);
+        restAuditService.saveAuditRequest(RestType.POST, user);
 
         return userRepository.save(user);
     }
     @SneakyThrows
-    public User updateUser(Long userId, MultipartFile file) {
+    public User updateUserPhoto(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId).orElseThrow(() -> E612.thr(userId));
-
+        E101.thr(!file.isEmpty() && !java.util.Objects.equals(file.getOriginalFilename(), "jpg"));
         if (file != null && !file.isEmpty()) {
             String fileName = "photo_" + user.getLogin() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get("C:\\employee_pictures", fileName);
@@ -140,7 +138,7 @@ public class UserService {
             user.setPhoto(filePath.toString());
         }
 
-        restAuditService.saveAuditRequest(RestType.PATCH, user);
+        restAuditService.saveAuditRequest(RestType.POST, user);
 
         return userRepository.save(user);
     }

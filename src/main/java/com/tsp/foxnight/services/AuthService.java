@@ -91,6 +91,15 @@ public class AuthService {
         return tokens;
     }
 
+    public Boolean logout(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
+        return true;
+    }
+
     private String generateToken(String subject, long expirationTime) {
         return Jwts.builder()
                 .setSubject(subject)

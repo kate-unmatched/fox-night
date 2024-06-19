@@ -1,13 +1,10 @@
 package com.tsp.foxnight.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tsp.foxnight.api.Api;
 import com.tsp.foxnight.api.PositiveResponse;
 import com.tsp.foxnight.dto.UserCreateDTO;
-import com.tsp.foxnight.dto.UserDTO;
 import com.tsp.foxnight.dto.UserUpdateDTO;
 import com.tsp.foxnight.services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -36,6 +33,12 @@ public class UserController {
     public PositiveResponse<?> createNewUser(@RequestPart("data") @Valid UserCreateDTO body,
                                              @RequestPart("photo") MultipartFile photo) {
         return Api.positiveResponse(userService.createUser(body, photo));
+    }
+
+    @PostMapping(value = "{id}", consumes = "multipart/form-data")
+    public PositiveResponse<?> updateUserPhoto(@RequestPart("data") @PathVariable @Valid Long id,
+            @RequestPart("photo") MultipartFile photo) {
+        return Api.positiveResponse(userService.updateUserPhoto(id, photo));
     }
 
     @PostMapping("{id}")
